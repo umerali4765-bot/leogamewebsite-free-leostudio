@@ -1,0 +1,72 @@
+// LOADING SCREEN
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loadingScreen = document.getElementById('loading-screen');
+    loadingScreen.style.transition = "opacity 1s";
+    loadingScreen.style.opacity = 0;
+    setTimeout(() => { loadingScreen.style.display = "none"; }, 1000);
+  }, 2000);
+});
+
+// GAME VARIABLES
+let day=1, hours=8, minutes=0;
+let LUMA = 10;
+let skills = {"Driving":0,"App Development":0,"Logic":0,"Customer Service":0};
+
+// SKILL SHOW
+function showSkills(){
+  let text="Skills:\n";
+  for(let key in skills){ text += `${key}: ${skills[key]}%\n`; }
+  document.getElementById("skills-display").innerText = text;
+}
+
+// PHONE BANK CHECK
+function checkBank(){
+  let crash = Math.random();
+  if(crash < 0.2){ logMessage("Leobank temporarily unavailable! ❌"); }
+  else { logMessage(`Current Balance: ✦${LUMA}`); }
+}
+
+// LOG DISPLAY
+function logMessage(msg){
+  let logDiv = document.getElementById("log");
+  logDiv.innerHTML += msg + "<br>";
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+// PHONE UPDATE
+function updatePhone(){
+  document.getElementById("day-date").innerText = `Day ${day}, ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')} AM`;
+  document.getElementById("leobank").innerText = `Leobank Balance: ✦${LUMA}`;
+}
+
+// TIME ADVANCE
+function advanceTime(minToAdd){
+  minutes += minToAdd;
+  if(minutes >= 60){ hours += Math.floor(minutes/60); minutes %= 60; }
+  if(hours >= 24){ hours-=24; day++; LUMA += 10; logMessage("Parents gave ✦10 LUMA"); }
+  if(hours >= 20){ logMessage("Taxi work must end! Go home 🏠"); }
+  updatePhone();
+}
+
+// TAXI ACTION
+function taxiCustomer(){
+  let earn = Math.floor(Math.random()*51)+50;
+  let type = Math.random()<0.5? "Cash":"Bank";
+  if(type==="Bank"){
+    if(Math.random()<0.1){ logMessage("Customer bank transfer failed!"); }
+    else{ LUMA += earn; logMessage(`Customer paid ✦${earn} via Bank ✅`); }
+  } else { LUMA += earn; logMessage(`Customer paid ✦${earn} in Cash ✅`); }
+  skills["Driving"] += 2;
+  showSkills();
+  updatePhone();
+}
+
+// AUTO SIMULATION (DEMO)
+setInterval(()=>{
+  taxiCustomer();
+  advanceTime(30);
+}, 20000);
+
+updatePhone();
+logMessage("Game Started! Day 1, 8:00 AM. ✦10 from parents.");
